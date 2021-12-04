@@ -1,29 +1,32 @@
 <?php
-include 'framework/App.php';
-
-// HTTP
-include 'framework/extensions/HTTP.php';
 /*
 to do:
 -param validation
 -method name validation (failure is invalid request)- necessary?
 -null ids are considered notifications and don't return a response on success
 */
+include 'framework/App.php';
 
-$app = new App(new HTTP());
+// HTTP
+include 'framework/extensions/HTTP.php';
 
-$app->middleware('authentication', function ($request, $response){
-  return $response->result('authentication');
+$source = new HTTP();
+$app = new App($source);
+
+$app->middleware('authentication', function ($request, $response) use ($app){
+  if ($app->source->authentication != 'Bearer 8675309'){
+    $response->error(-32222, 'Authentication failure');
+  }
 });
 
-$app->middleware('authorization',function ($request, $response){
-  return $response->result('authorization');
+$app->middleware('authorization',function ($request, $response) use ($app) {
+  return;
 });
 
-$app->group('this', ['authentication'], function ($app){
-  $app->group('That', ['authorization'], function ($app){
-    $app->method('Other', ['param1', 'param2'], [], function ($request, $response) {
-      return $response->result(shell_exec('google-chrome dgg.gg'));
+$app->group('group1', ['authentication'], function ($app){
+  $app->group('Group2', ['authorization'], function ($app){
+    $app->method('Test', ['param1'], [], function ($request, $response) {
+      $response->result('test');
     });
   });
 });
