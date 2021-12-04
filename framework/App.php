@@ -44,8 +44,8 @@ class App{
     $this->respond();
   }
 
-  function method($name, $middlewares, $reference) {
-    $method = new method($name, $this->getMiddlewares($middlewares), $reference, $this->currentGroup);
+  function method($name, $requiredParams = [], $middlewares = [], $reference) {
+    $method = new method($name, $requiredParams, $this->getMiddlewares($middlewares), $reference, $this->currentGroup);
     $this->methods[$this->getPath($method)] = $method;
     return $method;
   }
@@ -136,15 +136,29 @@ class Method{
   public $middlewares;
   public $reference;
   public $group;
+  public $requiredParams;
 
-  function __construct($name, $middlewares=[], $reference, $group = null) {
+  function __construct($name, $requiredParams = [], $middlewares=[], $reference, $group = null) {
     $this->name = $name;
     $this->middlewares = $middlewares;
     $this->reference = $reference;
     $this->group = $group;
+    $this->requiredParams = $requiredParams;
+  }
+
+  function validate($request) {
+    foreach ($this->requiredParams as $param){
+      if(!isset($request->params[$param])){
+        return false;
+      }
+    }
+    return true;
   }
 
   function exec($request, $response){
+    if(!$this->validate($request)){
+      $response->error(-32602, 'invalidParams', ['required' => $this->requiredParams]);
+    }
     if($this->group){
       $this->group->exec($request, $response);
     }

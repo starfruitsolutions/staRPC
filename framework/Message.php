@@ -20,6 +20,7 @@ class Request extends Message{
     //  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
     $this->version = $message['jsonrpc'] ?? false;
     $this->method = $message['method'] ?? false;
+    $this->params = $message['params'] ?? [];
 
     $this->id = $message['id'] ?? null;
 
