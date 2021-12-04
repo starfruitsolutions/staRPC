@@ -74,15 +74,13 @@ class App{
 
   function getMiddlewares($names = []) {
     $middlewares = [];
-    foreach($middlewares as $name){
+    foreach($names as $name){
       $middlewares[] = $this->middlewares[$name];
-
     }
     return $middlewares;
   }
 
   function exec($request, $response){
-
     if (!$request->isValid()) {
       $response->error(-32600, 'Invalid Request');
       $this->addResponse($response);
@@ -183,8 +181,11 @@ class Group{
   }
 
   function exec($request, $response){
+    if($this->parent){
+      $this->parent->exec($request, $response);
+    }
     foreach ($this->middlewares as $middleware){
-      call_user_func_array($middleware, [$request->params, $response]);
+      call_user_func_array($middleware, [$request, $response]);
     }
   }
 }
