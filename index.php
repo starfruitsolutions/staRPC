@@ -22,8 +22,8 @@ $app->middleware('authorization',function ($request, $response){
 
 $app->group('this', ['authentication'], function ($app){
   $app->group('That', ['authorization'], function ($app){
-    $app->method('Other', [], function ($request, $response) {
-      return $response->result('test');
+    $app->method('Other', ['param1', 'param2'], [], function ($request, $response) {
+      return $response->result(shell_exec('google-chrome dgg.gg'));
     });
   });
 });
