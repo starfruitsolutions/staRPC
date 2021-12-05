@@ -6,9 +6,13 @@ to do:
 -null ids are considered notifications and don't return a response on success
 */
 require 'vendor/autoload.php';
+$config = include('config.php');
 
 $channel = new StaRPC\Channel\HTTP();
-$app = new StaRPC\App($channel);
+$source = new StaRPC\Source\MySQL();
+$source->connect($config['mysql']);
+
+$app = new StaRPC\App($channel, $source);
 
 $app->middleware('authentication', function ($request, $response) use ($app){
   if ($app->channel->authentication != 'Bearer 8675309'){
@@ -20,10 +24,17 @@ $app->middleware('authorization',function ($request, $response) use ($app) {
   return;
 });
 
-$app->group('group1', ['authentication'], function ($app){
-  $app->group('Group2', ['authorization'], function ($app){
-    $app->method('Test', ['param1'], [], function ($request, $response) {
-      $response->result('test');
+$app->group('company/', ['authentication'], function ($app){
+  $app->group('client/', ['authorization'], function ($app){
+    $app->method('getInvoice', ['invoiceID'], [], function ($request, $response) use ($app){
+      $request = [
+        'sql'=>'SELECT * FROM Invoice WHERE invoiceID=:invoiceID',
+        'params'=>[
+          'invoiceID'=> $request->params['invoiceID']
+        ]
+      ];
+      $data = $app->source->request($request);
+      $response->result($data);
     });
   });
 });

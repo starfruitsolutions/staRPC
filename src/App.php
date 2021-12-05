@@ -7,13 +7,15 @@ namespace StaRPC;
 use StaRPC\Message as Message;
 
 class App{
+  public $channel;
+  public $source;
   public $methods = [];
   public $responses = [];
-  public $channel;
   public $middleware = [];
   private $currentGroup;
 
-  function __construct($channel) {
+
+  function __construct($channel, $source = null) {
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
         $response = new Message\Response();
         $response->error($errno, $errstr, [
@@ -25,6 +27,7 @@ class App{
         die;
     });
     $this->channel = $channel;
+    $this->source = $source;
   }
 
   function run(){
