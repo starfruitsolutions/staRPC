@@ -9,11 +9,11 @@ use StaRPC\Message as Message;
 class App{
   public $methods = [];
   public $responses = [];
-  public $source;
+  public $channel;
   public $middleware = [];
   private $currentGroup;
 
-  function __construct($source) {
+  function __construct($channel) {
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
         $response = new Message\Response();
         $response->error($errno, $errstr, [
@@ -21,15 +21,15 @@ class App{
           'line' => $errline,
           'backtrace' => debug_backtrace()
         ]);
-        $this->source->respond($response->message());
+        $this->channel->respond($response->message());
         die;
     });
-    $this->source = $source;
+    $this->channel = $channel;
   }
 
   function run(){
-    if( $this->isBatch($this->source->data) ){
-      foreach ($this->source->data as $request) {
+    if( $this->isBatch($this->channel->data) ){
+      foreach ($this->channel->data as $request) {
         $request = new Message\Request($request);
         $response = new Message\Response($request->id);
 
@@ -37,7 +37,7 @@ class App{
       }
     }
     else {
-      $request = new Message\Request($this->source->data);
+      $request = new Message\Request($this->channel->data);
       $response = new Message\Response($request->id);
 
       $this->exec($request, $response);
@@ -106,10 +106,10 @@ class App{
       die();
     }
     else if(count($this->responses) >= 1) {
-      $this->source->respond($this->responses);
+      $this->channel->send($this->responses);
     }
     else {
-      $this->source->respond($this->responses[0]);
+      $this->channel->send($this->responses[0]);
     }
   }
 

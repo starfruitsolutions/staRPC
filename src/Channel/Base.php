@@ -1,9 +1,9 @@
 <?php
 /*
-Base class for data transmission sources
+Base class for data transmission channels
 */
 
-namespace StaRPC\Source;
+namespace StaRPC\Channel;
 
 class Base{
   public $authentication;

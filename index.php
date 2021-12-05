@@ -7,11 +7,11 @@ to do:
 */
 require 'vendor/autoload.php';
 
-$source = new StaRPC\Source\HTTP();
-$app = new StaRPC\App($source);
+$channel = new StaRPC\Channel\HTTP();
+$app = new StaRPC\App($channel);
 
 $app->middleware('authentication', function ($request, $response) use ($app){
-  if ($app->source->authentication != 'Bearer 8675309'){
+  if ($app->channel->authentication != 'Bearer 8675309'){
     $response->error(-32222, 'Authentication failure');
   }
 });
