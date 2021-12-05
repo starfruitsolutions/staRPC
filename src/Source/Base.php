@@ -2,7 +2,10 @@
 /*
 Base class for data transmission sources
 */
-class Source{
+
+namespace StaRPC\Source;
+
+class Base{
   public $authentication;
   public $data;
 

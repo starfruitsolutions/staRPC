@@ -5,13 +5,10 @@ to do:
 -method name validation (failure is invalid request)- necessary?
 -null ids are considered notifications and don't return a response on success
 */
-include 'framework/App.php';
+require 'vendor/autoload.php';
 
-// HTTP
-include 'framework/extensions/HTTP.php';
-
-$source = new HTTP();
-$app = new App($source);
+$source = new StaRPC\Source\HTTP();
+$app = new StaRPC\App($source);
 
 $app->middleware('authentication', function ($request, $response) use ($app){
   if ($app->source->authentication != 'Bearer 8675309'){

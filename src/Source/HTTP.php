@@ -2,7 +2,10 @@
 /*
 extends source adding http requests
 */
-class HTTP extends Source{
+
+namespace StaRPC\Source;
+
+class HTTP extends Base{
 
   function __construct() {
     $this->authentication = $_SERVER['HTTP_AUTHORIZATION'];

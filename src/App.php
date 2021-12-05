@@ -2,8 +2,9 @@
 /*
 executes everything
 */
-include 'Source.php';
-include 'Message.php';
+
+namespace StaRPC;
+use StaRPC\Message as Message;
 
 class App{
   public $methods = [];
@@ -14,7 +15,7 @@ class App{
 
   function __construct($source) {
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
-        $response = new Response();
+        $response = new Message\Response();
         $response->error($errno, $errstr, [
           'file' => $errfile,
           'line' => $errline,
@@ -29,15 +30,15 @@ class App{
   function run(){
     if( $this->isBatch($this->source->data) ){
       foreach ($this->source->data as $request) {
-        $request = new Request($request);
-        $response = new Response($request->id);
+        $request = new Message\Request($request);
+        $response = new Message\Response($request->id);
 
         $this->exec($request, $response);
       }
     }
     else {
-      $request = new Request($this->source->data);
-      $response = new Response($request->id);
+      $request = new Message\Request($this->source->data);
+      $response = new Message\Response($request->id);
 
       $this->exec($request, $response);
     }

@@ -1,0 +1,17 @@
+{
+    "name": "starfruitsolutions/starpc",
+    "description": "PHP json-rpc 2.0 framework",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "StaRPC\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Brad-Lee Nichols",
+            "email": "administrative@starfruitsolutions.com"
+        }
+    ],
+    "require": {}
+}

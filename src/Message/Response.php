@@ -1,37 +1,12 @@
 <?php
 /*
-Base class for json-rpc messaging
+Class for outgoing json-rpc responses
 */
+namespace StaRPC\Message;
 
-class Message {
+class Response{
   public $version;
   public $id;
-
-  function __construct() {
-    pass;
-  }
-}
-
-class Request extends Message{
-  public $method;
-  public $params;
-
-  function __construct($message) {
-    //  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
-    $this->version = $message['jsonrpc'] ?? false;
-    $this->method = $message['method'] ?? false;
-    $this->params = $message['params'] ?? [];
-
-    $this->id = $message['id'] ?? null;
-
-  }
-
-  function isValid() {
-    return ($this->version == '2.0' && $this->method);
-  }
-}
-
-class Response extends Message{
   public $result;
   public $error;
 
