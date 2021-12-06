@@ -8,11 +8,15 @@ to do:
 require 'vendor/autoload.php';
 $config = include('config.php');
 
-$channel = new StaRPC\Channel\HTTP();
+$app = new StaRPC\App();
+
+//register channel
+$app->channel(new StaRPC\Channel\HTTP());
+
+//register source
 $source = new StaRPC\Source\MySQL();
 $source->connect($config['mysql']);
-
-$app = new StaRPC\App($channel, $source);
+$app->source($source);
 
 $app->middleware('authentication', function ($request, $response) use ($app){
   if ($app->channel->authentication != 'Bearer 8675309'){

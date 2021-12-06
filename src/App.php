@@ -15,7 +15,7 @@ class App{
   private $currentGroup;
 
 
-  function __construct($channel, $source = null) {
+  function __construct() {
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
         $response = new Message\Response();
         $response->error($errno, $errstr, [
@@ -26,7 +26,17 @@ class App{
         $this->channel->respond($response->message());
         die;
     });
+  }
+
+  function get(){
+    return self::$instance;;
+  }
+
+  function channel($channel){
     $this->channel = $channel;
+  }
+
+  function source($source){
     $this->source = $source;
   }
 
@@ -49,13 +59,13 @@ class App{
   }
 
   function method($name, $requiredParams = [], $middlewares = [], $reference) {
-    $method = new method($name, $requiredParams, $this->getMiddlewares($middlewares), $reference, $this->currentGroup);
+    $method = new Procedure\Method($name, $requiredParams, $this->getMiddlewares($middlewares), $reference, $this->currentGroup);
     $this->methods[$this->getPath($method)] = $method;
     return $method;
   }
 
   function group($name, $middlewares = [], $callback) {
-    $group = new Group($name, $this->getMiddlewares($middlewares), $this->currentGroup);
+    $group = new Procedure\Group($name, $this->getMiddlewares($middlewares), $this->currentGroup);
     $this->currentGroup = $group;
     call_user_func($callback, $this);
     $this->currentGroup = null;
@@ -130,66 +140,5 @@ class App{
     }
     // Dealing with a Sequential array
     return true;
-  }
-}
-
-class Method{
-  public $name;
-  public $middlewares;
-  public $reference;
-  public $group;
-  public $requiredParams;
-
-  function __construct($name, $requiredParams = [], $middlewares=[], $reference, $group = null) {
-    $this->name = $name;
-    $this->middlewares = $middlewares;
-    $this->reference = $reference;
-    $this->group = $group;
-    $this->requiredParams = $requiredParams;
-  }
-
-  function validate($request) {
-    foreach ($this->requiredParams as $param){
-      if(!isset($request->params[$param])){
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function exec($request, $response){
-    if(!$this->validate($request)){
-      $response->error(-32602, 'invalidParams', ['required' => $this->requiredParams]);
-    }
-    if($this->group){
-      $this->group->exec($request, $response);
-    }
-    if ($this->middlewares){
-      foreach($this->middlewares as $middleware){
-        call_user_func_array($middleware, [$request, $response]);
-      }
-    }
-    call_user_func_array($this->reference, [$request, $response]);
-  }
-}
-
-class Group{
-  public $name;
-  public $parent;
-  public $middlewares;
-
-  function __construct($name, $middlewares = [], $parent = null) {
-    $this->name = $name;
-    $this->middlewares = $middlewares;
-    $this->parent = $parent;
-  }
-
-  function exec($request, $response){
-    if($this->parent){
-      $this->parent->exec($request, $response);
-    }
-    foreach ($this->middlewares as $middleware){
-      call_user_func_array($middleware, [$request, $response]);
-    }
   }
 }
