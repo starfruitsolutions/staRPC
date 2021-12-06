@@ -24,7 +24,7 @@ class App{
         $response->error($errno, $errstr, [
           'file' => $errfile,
           'line' => $errline,
-          'backtrace' => debug_backtrace()
+          'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3)
         ]);
         $this->channel->send($response->message());
         die;
