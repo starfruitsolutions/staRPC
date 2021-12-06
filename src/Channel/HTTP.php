@@ -9,7 +9,7 @@ use \StaRPC\Message as Message;
 class HTTP extends Base{
 
   function __construct() {
-    $this->authentication = $_SERVER['HTTP_AUTHORIZATION'];
+    $this->authentication = $_SERVER['HTTP_AUTHORIZATION']?? false;
 
     $this->validate();
 

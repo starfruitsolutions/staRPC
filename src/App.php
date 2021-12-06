@@ -24,7 +24,7 @@ class App{
           'line' => $errline,
           'backtrace' => debug_backtrace()
         ]);
-        $this->channel->respond($response->message());
+        $this->channel->send($response->message());
         die;
     });
   }
@@ -62,7 +62,7 @@ class App{
 
       $this->exec($request, $response);
     }
-    $this->respond();
+    $this->sendResponses();
   }
 
   function method($name, $requiredParams = [], $middlewares = [], $reference) {
@@ -121,7 +121,7 @@ class App{
     $this->responses[] = $response->message();
   }
 
-  function respond(){
+  function sendResponses(){
     if (!$this->responses) {
       die();
     }
