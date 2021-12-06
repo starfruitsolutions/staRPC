@@ -18,7 +18,7 @@ class MySQL extends Base{
   }
 
   function validate($request){
-    if($request['sql']){
+    if($request['sql'] ?? false){
       return true;
     }
     return false;
