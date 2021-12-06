@@ -21,7 +21,7 @@ class Group{
       $this->parent->exec($request, $response);
     }
     foreach ($this->middlewares as $middleware){
-      call_user_func_array($middleware, [$request, $response]);
+      $middleware($request, $response);
     }
   }
 }

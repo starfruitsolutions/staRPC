@@ -38,9 +38,10 @@ class Method{
     }
     if ($this->middlewares){
       foreach($this->middlewares as $middleware){
-        call_user_func_array($middleware, [$request, $response]);
+        $middleware($request, $response);
       }
     }
-    call_user_func_array($this->reference, [$request, $response]);
+    $reference = $this->reference;
+    $reference($request, $response);
   }
 }
