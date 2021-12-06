@@ -20,11 +20,13 @@ $source = new Source\MySQL();
 $source->connect($config['mysql']);
 $app->source($source);
 
-$app->middleware('authentication', function ($request, $response) use ($app){
-  if ($app->channel->authentication != 'Bearer 8675309'){
+$app->middleware('authentication', function ($request, $response){
+  if (App::get()->channel->authentication != 'Bearer 8675309'){
     $response->error(-32222, 'Authentication failure');
   }
 });
+
+$app->container->thing = 'thing';
 
 $app->middleware('authorization',function ($request, $response) use ($app) {
   return;
@@ -33,14 +35,17 @@ $app->middleware('authorization',function ($request, $response) use ($app) {
 $app->group('company/', ['authentication'], function ($app){
   $app->group('client/', ['authorization'], function ($app){
     $app->method('getInvoice', ['invoiceID'], [], function ($request, $response){
+      $app = App::get();
       $request = [
         'sql'=>'SELECT * FROM Invoice WHERE invoiceID=:invoiceID',
         'params'=>[
           'invoiceID'=> $request->params['invoiceID']
         ]
       ];
-      $data = App::get()->source->request($request);
-      $response->result($data);
+      $sourceData = $app->source->request($request);
+      $containerData = $app->container->thing;
+
+      $response->result([$sourceData, $containerData]);
     });
   });
 });

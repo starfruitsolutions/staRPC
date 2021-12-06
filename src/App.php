@@ -10,6 +10,7 @@ class App{
   private static $instance = null; // Hold the class instance.
   public $channel;
   public $source;
+  public $container;
   public $methods = [];
   public $responses = [];
   public $middleware = [];
@@ -17,6 +18,7 @@ class App{
 
 
   private function __construct() {
+    $this->container = new Container();
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
         $response = new Message\Response();
         $response->error($errno, $errstr, [
