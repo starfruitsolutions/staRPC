@@ -7,6 +7,7 @@ namespace StaRPC;
 use StaRPC\Message as Message;
 
 class App{
+  private static $instance = null; // Hold the class instance.
   public $channel;
   public $source;
   public $methods = [];
@@ -15,7 +16,7 @@ class App{
   private $currentGroup;
 
 
-  function __construct() {
+  private function __construct() {
     set_error_handler(function($errno, $errstr, $errfile, $errline ){
         $response = new Message\Response();
         $response->error($errno, $errstr, [
@@ -28,8 +29,14 @@ class App{
     });
   }
 
-  function get(){
-    return self::$instance;;
+  public static function get(){
+
+    if(!self::$instance)
+    {
+      self::$instance = new App();
+    }
+
+    return self::$instance;
   }
 
   function channel($channel){

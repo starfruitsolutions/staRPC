@@ -5,16 +5,18 @@ to do:
 -method name validation (failure is invalid request)- necessary?
 -null ids are considered notifications and don't return a response on success
 */
+namespace StaRPC;
+
 require 'vendor/autoload.php';
 $config = include('config.php');
 
-$app = new StaRPC\App();
+$app = App::get();
 
 //register channel
-$app->channel(new StaRPC\Channel\HTTP());
+$app->channel(new Channel\HTTP());
 
 //register source
-$source = new StaRPC\Source\MySQL();
+$source = new Source\MySQL();
 $source->connect($config['mysql']);
 $app->source($source);
 
@@ -30,14 +32,14 @@ $app->middleware('authorization',function ($request, $response) use ($app) {
 
 $app->group('company/', ['authentication'], function ($app){
   $app->group('client/', ['authorization'], function ($app){
-    $app->method('getInvoice', ['invoiceID'], [], function ($request, $response) use ($app){
+    $app->method('getInvoice', ['invoiceID'], [], function ($request, $response){
       $request = [
         'sql'=>'SELECT * FROM Invoice WHERE invoiceID=:invoiceID',
         'params'=>[
           'invoiceID'=> $request->params['invoiceID']
         ]
       ];
-      $data = $app->source->request($request);
+      $data = App::get()->source->request($request);
       $response->result($data);
     });
   });
