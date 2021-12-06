@@ -28,12 +28,8 @@ $app->middleware('authentication', function ($request, $response){
 
 $app->container->thing = 'thing';
 
-$app->middleware('authorization',function ($request, $response) use ($app) {
-  return;
-});
-
 $app->group('company/', ['authentication'], function ($app){
-  $app->group('client/', ['authorization'], function ($app){
+  $app->group('client/', [], function ($app){
     $app->method('getInvoice', ['invoiceID'], [], function ($request, $response){
       $app = App::get();
       $request = [
